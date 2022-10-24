@@ -9,36 +9,49 @@ public class Snake : MonoBehaviour
     public Vector2 direction = Vector2.right;
     private Vector2 input;
     public int initialSize = 4;
+    private SwipeManager swipeManager;
+    public ScoreManager scoreManager;
 
     private void Start()
     {
+        swipeManager=SwipeManager.Instance;
         ResetState();
+
     }
 
     private void Update()
     {
+        if (!SwipeManager.Instance.isStart)
+        {
+            return;
+        }
         // Only allow turning up or down while moving in the x-axis
         if (direction.x != 0f)
         {
-            if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) {
+            if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow) || swipeManager.Direction == SwipeManager.SwipeDirection.UP) {
                 input = Vector2.up;
-            } else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)) {
+            } else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow) || swipeManager.Direction == SwipeManager.SwipeDirection.DOWN) {
                 input = Vector2.down;
             }
         }
         // Only allow turning left or right while moving in the y-axis
         else if (direction.y != 0f)
         {
-            if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) {
+            if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow) || swipeManager.Direction == SwipeManager.SwipeDirection.RIGHT ) {
                 input = Vector2.right;
-            } else if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) {
+            } else if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow) || swipeManager.Direction == SwipeManager.SwipeDirection.LEFT) {
                 input = Vector2.left;
             }
         }
+
     }
 
     private void FixedUpdate()
     {
+        if (!SwipeManager.Instance.isStart)
+        {
+        return;
+        }
         // Set the new direction based on the input
         if (input != Vector2.zero) {
             direction = input;
@@ -56,8 +69,12 @@ public class Snake : MonoBehaviour
         float x = Mathf.Round(transform.position.x) + direction.x;
         float y = Mathf.Round(transform.position.y) + direction.y;
 
-        transform.position = new Vector2(x, y);
+        transform.position = new Vector2(x-speed, y-speed);
+      // transform.Translate(new Vector3(x*Time.deltaTime*speed,y*Time.deltaTime*speed,0f));
+        Debug.Log("x"+x);
+        Debug.Log("y"+y);
     }
+    public float speed = 0f;
 
     public void Grow()
     {
@@ -88,8 +105,14 @@ public class Snake : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (!SwipeManager.Instance.isStart)
+        {
+        return;
+        }
         if (other.gameObject.CompareTag("Food")) {
             Grow();
+            scoreManager.IncrementScore();
+
         } else if (other.gameObject.CompareTag("Obstacle")) {
             ResetState();
         }

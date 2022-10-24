@@ -6,7 +6,7 @@ public class Food : MonoBehaviour
 
     private void Start()
     {
-        RandomizePosition();
+        //RandomizePosition();
     }
 
     public void RandomizePosition()
@@ -26,6 +26,10 @@ public class Food : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (!SwipeManager.Instance.isStart)
+        {
+        return;
+        }
         RandomizePosition();
     }
 
