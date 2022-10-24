@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(BoxCollider2D))]
 public class Snake : MonoBehaviour
@@ -114,6 +115,7 @@ public class Snake : MonoBehaviour
             scoreManager.IncrementScore();
 
         } else if (other.gameObject.CompareTag("Obstacle")) {
+            scoreManager.ResetScore();
             ResetState();
         }
     }
